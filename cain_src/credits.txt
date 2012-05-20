@@ -1,0 +1,21 @@
+3D Face Screensaver v1.0.1
+by Philippe Choquette
+http://www.pcosmos.ca/
+
+Thanks to
+
+Rachel Grey
+Writing an OpenGL Screensaver for Windows
+http://cityintherain.com/howtoscr.html
+
+Lance Ramoth
+OpenGL Windows Screen Saver Tutorial
+http://developer.nomadph.com/guest003.html
+
+Nate Robins
+GLUT for Win32
+http://www.xmission.com/~nate/glut.html
+
+The RoboCop Archive
+ocp-logo2.gif
+http://www.robocoparchive.com/info/logos.htm
