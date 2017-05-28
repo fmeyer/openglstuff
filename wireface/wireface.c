@@ -1,35 +1,35 @@
-#include <gl/glut.h>
+#include <GL/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <windows.h>
+#include <stdbool.h>
+#include <string.h>
 #include "wireface.h"
 #include "normals.h"
 
 void updtNorms(void);
 
-
 GLfloat dhauteur = 0.0;
 sens dirMov = UP;
-boolean move = FALSE;
+bool move = false;
 
 GLint delaiExpr = 300;
-boolean changeExpr = FALSE;
+bool changeExpr = false;
 sentiment expression = NEUTRE;
 sentiment exprDesiree = NEUTRE;
 
 GLint delaiYeux = 200;
-boolean yeuxBougent = FALSE;
+bool yeuxBougent = false;
 dirYeux yeuxActuel = CENTRE;
 dirYeux yeuxDesire = CENTRE;
 GLfloat angleYeux = 0.0;
 
-boolean loin = TRUE;
+bool loin = true;
 GLint nbOui = 3;
 GLfloat angle1 = 0.0; /* rotation autour de l'axe x */
 GLfloat angle2 = 0.0; /* rotation autour de l'axe y */
-boolean angle1aug = TRUE;
+bool angle1aug = true;
 GLint angle1delai = 0;
-boolean angle2aug = TRUE;
+bool angle2aug = true;
 
 etatProche proche = SETZERO;
 GLfloat proche_x = 0.0;
@@ -65,7 +65,7 @@ void init(void)
    glClearColor (0.0, 0.0, 0.0, 0.0);
    glShadeModel (GL_SMOOTH);
    glEnableClientState (GL_VERTEX_ARRAY);
- 
+
    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 22.5);
@@ -86,11 +86,11 @@ void init(void)
    glEnable(GL_CULL_FACE);
 
    for(i = 0; i < 24; i++) pupil[i] = i + 24;
-   
+
    //CopyMemory(vertices, verticesJoie, VERTICES_BOX01*3*sizeof(GLfloat));
    //updtNorms();
-   CopyMemory(vertices, verticesNeutre, VERTICES_BOX01*3*sizeof(GLfloat));
-   CopyMemory(norm, normNeutre, VERTICES_BOX01*3*sizeof(GLfloat));
+   memcpy(vertices, verticesNeutre, VERTICES_BOX01*3*sizeof(GLfloat));
+   memcpy(norm, normNeutre, VERTICES_BOX01*3*sizeof(GLfloat));
 
    srand( (unsigned)time( NULL ) );
 }
@@ -101,7 +101,7 @@ void setInc(void)
 {
    GLfloat dx, dy, dz;
    int i;
-   
+
    switch(exprDesiree)
    {
       case NEUTRE:
@@ -117,7 +117,7 @@ void setInc(void)
          vert2 = verticesColere;
          break;
    }
-   
+
    nInc = 0;
    free(increm);
    increm = NULL;
@@ -135,17 +135,17 @@ void setInc(void)
          nInc++;
          increm = realloc(increm, 3*nInc*sizeof(GLfloat));
          toInc = realloc(toInc, nInc*sizeof(GLfloat));
-         
+
          if (toInc == NULL || increm == NULL)
          {
             printf("erreur de reallocation dans setInc");
             exit(1);
          }
-         
+
          increm[3*(nInc-1)] = dx / ETAPES_TRANS;
          increm[3*(nInc-1) + 1] = dy / ETAPES_TRANS;
          increm[3*(nInc-1) + 2] = dz / ETAPES_TRANS;
-         
+
          toInc[nInc-1] = i;
       }
    }
@@ -156,7 +156,7 @@ void setInc(void)
 void incVert(void)
 {
    int i;
-   
+
    for (i = 0; i < nInc; i++)
    {
       vertices[3*toInc[i]] += increm[3*i];
@@ -181,13 +181,13 @@ void updtNorms(void)
 
    for(i = 0; i < FACES_BOX01; i++)
       surfaceNormal(
-         &vertices[3*faces[i][0]], 
+         &vertices[3*faces[i][0]],
          &vertices[3*faces[i][1]],
-         &vertices[3*faces[i][2]], 
+         &vertices[3*faces[i][2]],
          &faceNormals[i][0]);
 
-   ZeroMemory(currSize, VERTICES_BOX01*sizeof(GLint));
-   ZeroMemory(vrtxFacesNorm, VERTICES_BOX01*sizeof(GLfloat**));
+   memset(currSize, 0, VERTICES_BOX01*sizeof(GLint));
+   memset(vrtxFacesNorm, 0, VERTICES_BOX01*sizeof(GLfloat**));
 
    /* initialisaition de vrtxFacesNorm */
    for(i = 0; i < FACES_BOX01; i++)
@@ -196,11 +196,11 @@ void updtNorms(void)
       {
          currSize[faces[i][j]]++;
          vrtxFacesNorm[faces[i][j]] =
-            (GLfloat**)realloc(vrtxFacesNorm[faces[i][j]], 
+            (GLfloat**)realloc(vrtxFacesNorm[faces[i][j]],
             currSize[faces[i][j]]*ptrFlSize);
          if (vrtxFacesNorm[faces[i][j]] == NULL)
          {
-            AnsiToOem(errMsg, errMsg);
+            // AnsiToOem(errMsg, errMsg);
             printf(errMsg);
             exit(1);
          }
@@ -219,7 +219,7 @@ void anim(void)
 {
    GLint hasard;
    GLint choixExpr[3];
-   
+
    /* position de la tête */
    if (loin)
    {
@@ -233,7 +233,7 @@ void anim(void)
                if (angle1 >= 5.0)
                {
                   angle1 = 5.0;
-                  angle1aug = FALSE;
+                  angle1aug = false;
                   angle1delai = 50;
                }
             }
@@ -243,7 +243,7 @@ void anim(void)
                if (angle1 <= -5.0)
                {
                   angle1 = -5.0;
-                  angle1aug = TRUE;
+                  angle1aug = true;
                   angle1delai = 50;
                }
             }
@@ -259,7 +259,7 @@ void anim(void)
             if (angle2 >= 20.0)
             {
                angle2 = 20.0;
-               angle2aug = FALSE;
+               angle2aug = false;
                nbOui--;
             }
          }
@@ -269,13 +269,13 @@ void anim(void)
             if (angle2 <= -20.0)
             {
                angle2 = -20.0;
-               angle2aug = TRUE;
+               angle2aug = true;
             }
          }
       } // if (nbOui > 0)
       else
       {
-         loin = FALSE;
+         loin = false;
       }
    }
    else
@@ -360,7 +360,7 @@ void anim(void)
             else
             {
                proche = SETZERO;
-               loin = TRUE;
+               loin = true;
                proche_x = proche_y = proche_z = 0.0;
                nbOui = 3;
             }
@@ -382,7 +382,7 @@ void anim(void)
       if (stepTrans == ETAPES_TRANS)
       {
          stepTrans = 0;
-         changeExpr = FALSE;
+         changeExpr = false;
          expression = exprDesiree;
          delaiExpr = 300;
       }
@@ -392,7 +392,7 @@ void anim(void)
       delaiExpr--;
       if (delaiExpr == 0)
       {
-         changeExpr = TRUE;
+         changeExpr = true;
          // choix de la prochaine expression
          switch (expression)
          {
@@ -431,7 +431,7 @@ void anim(void)
             angleYeux -= 1.0;
             if (angleYeux <= 0.0)
             {
-               yeuxBougent = FALSE;
+               yeuxBougent = false;
                delaiYeux = rand() % 200;
                yeuxActuel = yeuxDesire;
                angleYeux = 0.0;
@@ -443,7 +443,7 @@ void anim(void)
                angleYeux += 1.0;
                if (angleYeux >= 20.0)
                {
-                  yeuxBougent = FALSE;
+                  yeuxBougent = false;
                   delaiYeux = rand() % 200;
                   yeuxActuel = yeuxDesire;
                   angleYeux = 20.0;
@@ -454,7 +454,7 @@ void anim(void)
                angleYeux -= 1.0;
                if (angleYeux <= -20.0)
                {
-                  yeuxBougent = FALSE;
+                  yeuxBougent = false;
                   delaiYeux = rand() % 200;
                   yeuxActuel = yeuxDesire;
                   angleYeux = -20.0;
@@ -465,7 +465,7 @@ void anim(void)
             angleYeux += 1.0;
             if (angleYeux >= 0.0)
             {
-               yeuxBougent = FALSE;
+               yeuxBougent = false;
                delaiYeux = rand() % 200;
                yeuxActuel = yeuxDesire;
                angleYeux = 0.0;
@@ -478,7 +478,7 @@ void anim(void)
       delaiYeux--;
       if (delaiYeux == 0)
       {
-         yeuxBougent = TRUE;
+         yeuxBougent = true;
          // choix de la prochaine position
          switch (yeuxActuel)
          {
@@ -496,7 +496,7 @@ void anim(void)
          }
       }
    }
-   
+
    glutPostRedisplay();
 }
 
@@ -518,10 +518,10 @@ void display(void)
    GLfloat emission_def[] = {0.0, 0.0, 0.0, 1.0};
 
    GLint i;
-   
+
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glPushMatrix();
-   
+
    gluLookAt(150.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 1.0);
 
    glRotatef(angle1, 1.0, 0.0, 0.0);
@@ -557,7 +557,7 @@ void display(void)
    glVertexPointer(3, GL_FLOAT, 0, eye_vertices);
    glNormalPointer(GL_FLOAT, 0, eye_norm);
    glDrawElements(GL_TRIANGLES, 3*FACES_GEO1, GL_UNSIGNED_INT, eye_faces);
-   
+
    glPushMatrix();
    glTranslatef(0.0, 24.918, 0.0);
    glDrawElements(GL_TRIANGLES, 3*FACES_GEO1, GL_UNSIGNED_INT, eye_faces);
@@ -594,8 +594,8 @@ void display(void)
       glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, &iris_faces[i][0]);
    }
    glPopMatrix();
-   
-   
+
+
    /* affichage des pupilles */
 
    glPushMatrix();
@@ -718,19 +718,19 @@ int main(int argc, char** argv)
 {
    //int i;
 
-   /* traitement des paramètres 
+   /* traitement des paramètres
    for(i = 0; i < argc; i++)
    {
-      if (strcmp(argv[i],"-l") == 0) enlight = TRUE;
-   }  */ 
+      if (strcmp(argv[i],"-l") == 0) enlight = true;
+   }  */
 
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-   glutInitWindowSize (640, 480); 
+   glutInitWindowSize (640, 480);
    glutInitWindowPosition (200, 200);
    glutCreateWindow (argv[0]);
    init ();
-   glutDisplayFunc(display); 
+   glutDisplayFunc(display);
    glutReshapeFunc(reshape);
    glutIdleFunc(anim);
    glutMainLoop();
